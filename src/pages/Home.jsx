@@ -1,21 +1,49 @@
 import Moviecard from "../components/MovieCard"
-import {useState} from "react"
+import {useState, useEffect} from "react"
+import { searchMovies, getPopularMovies } from "../services/api";
 import "../css/Home.css"
 
 function Home() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [movies, setMovies] = useState([])
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const movies = [
-    { id: 1, title: "John wick", release_date: "2020" },
-    { id: 2, title: "Near", release_date: "2021" },
-    { id: 3, title: "Away", release_date: "2022" },
-    { id: 4, title: "Ride or die", release_date: "2023" },
-  ]
+  useEffect(()=>{
+    const loadPopularMovies = async () => {
+      try {
+        const popularMovies = await getPopularMovies ()
+        setMovies(popularMovies)
+      } catch(err){
+        console.log(err)
+        setError("Failed to load movies...")
+      }
+      finally{
+        setLoading(false)
+      }
+    }
 
-  const handleSearch = (e) => {
+    loadPopularMovies()
+  }, [])
+
+  const handleSearch = async (e) => {
     e.preventDefault()
-    alert(searchQuery)
-    setSearchQuery("-----")
+    if (!searchQuery.trim()) return
+    if (loading) return
+
+    setLoading(true)
+    try {
+      const searchResults = await searchMovies(searchQuery)
+      setMovies(searchResults)
+      setError(null)
+    } catch (err) {
+      console.log(err)
+      setError("Failed to search movies...")
+      
+    }finally{
+      setLoading(false)
+    }
+  
   }
 
   return <div className="home">
@@ -30,16 +58,19 @@ function Home() {
       <button type="submit" className="search-button">Search</button>
     </form>
 
-    <div className="movies-grid">
+
+      {error && <div className="error">{error}</div>}
+
+    { loading ? (<div className="loading">Loading...</div> ) :
+    (<div className="movies-grid">
       {movies.map(
         (movie) => 
         // movie.title.toLowerCase().startsWith(searchQuery) && 
         (
           <Moviecard movie={movie} key={movie.id} />
-          ) 
-        )}
-    </div>
-  </div>
+          ))}
+    </div>)}
+  </div> 
 }
 
 export default Home
