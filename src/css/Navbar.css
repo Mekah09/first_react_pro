@@ -1,10 +1,16 @@
 .navbar {
-  background-color: #6f3dc7;
+  background-color: rgb(60, 60, 169);
+  color: white;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 70px;
+  margin-top: 20px;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-bottom: 0px;
 }
 
 .navbar-brand {
@@ -31,6 +37,8 @@
 @media (max-width: 768px) {
   .navbar {
     padding: 1rem;
+    border-radius: 0px;
+    margin: 0px;
   }
 
   .navbar-brand {
